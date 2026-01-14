@@ -1,4 +1,5 @@
 // app/page.tsx
+import HeroUploadArea from "./_components/HeroUploadArea";
 import ImageCard from "./_components/ImageCard";
 import { ImageData } from "@/types/image";
 
@@ -6,46 +7,7 @@ export default function GalleryPage() {
     return (
         <main className="container mx-auto px-6 lg:px-20 py-8">
             {/* Hero Section / Upload Area */}
-            <section className="mb-12">
-                <div className="bg-primary/5 border-2 border-dashed border-primary/30 rounded-xl p-8 lg:p-12 flex flex-col lg:flex-row items-center gap-10">
-                    <div className="w-full lg:w-1/2 aspect-video bg-white rounded-xl shadow-sm overflow-hidden flex items-center justify-center relative group">
-                        <div className="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                            <p className="text-primary font-bold">
-                                Drop files to upload
-                            </p>
-                        </div>
-                        <div className="text-center p-6">
-                            <span className="material-symbols-outlined text-primary text-5xl mb-4">
-                                add_photo_alternate
-                            </span>
-                            <h3 className="text-lg font-bold">
-                                Drag and drop images here
-                            </h3>
-                            <p className="text-[#509595] text-sm">
-                                PNG, JPG, GIF up to 20MB
-                            </p>
-                        </div>
-                    </div>
-                    <div className="w-full lg:w-1/2 space-y-4 text-center lg:text-left">
-                        <h1 className="text-4xl lg:text-5xl font-extrabold leading-tight tracking-tight text-font-color">
-                            Your Creative{" "}
-                            <span className="text-primary">Vault</span>
-                        </h1>
-                        <p className="text-[#509595] text-lg max-w-md mx-auto lg:mx-0">
-                            High-speed image hosting with instant QR sharing.
-                            Organize your visual inspiration in seconds.
-                        </p>
-                        <div className="pt-4 flex flex-wrap gap-3 justify-center lg:justify-start">
-                            <button className="bg-primary text-font-color px-8 py-3 rounded-xl font-bold hover:scale-105 transition-transform shadow-lg shadow-primary/20">
-                                Upload Now
-                            </button>
-                            <button className="bg-white border border-[#e8f3f3] text-font-color px-8 py-3 rounded-xl font-bold hover:bg-[#f8fbfb] transition-colors">
-                                View Plans
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </section>
+            <HeroUploadArea />
 
             {/* Filter Bar */}
             <section className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">

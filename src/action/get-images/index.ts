@@ -111,20 +111,18 @@ export async function getCloudinaryImages(
         // Calculate current page based on cursor
         let currentPage = 1;
         if (nextCursor) {
-            currentPage = 2; // Simplified - you might want to track this differently
+            currentPage = 2;
         }
 
         // Ensure resources is always an array
-        const imagesArray = Array.isArray(result.resources)
-            ? result.resources
-            : [];
+        const images = Array.isArray(result.resources) ? result.resources : [];
 
         // Prepare pagination data
         const paginationData: PaginatedCloudinaryImages = {
-            images: imagesArray,
+            images: images,
             pagination: {
                 nextCursor: result.next_cursor,
-                prevCursor: undefined, // Cloudinary doesn't provide previous cursor
+                prevCursor: undefined,
                 hasMore: !!result.next_cursor,
                 total: result.total_count,
                 currentPage,
@@ -133,15 +131,13 @@ export async function getCloudinaryImages(
         };
 
         console.log(
-            `Fetched ${
-                imagesArray.length
-            } images, has more: ${!!result.next_cursor}`
+            `Fetched ${images.length} images, has more: ${!!result.next_cursor}`
         );
 
         return {
             success: true,
             data: paginationData,
-            message: `Found ${imagesArray.length} images`,
+            message: `Found ${images.length} images`,
         };
     } catch (error) {
         console.error("Error in getCloudinaryImages:", error);
@@ -162,63 +158,84 @@ export async function getCloudinaryImages(
 export async function getCloudinaryImagesByPage(
     page: number = 1,
     pageSize: number = 12,
-    folder: string = "uploads",
-    cursorHistory: string[] = []
+    folder: string = "uploads"
 ): Promise<{
     success: boolean;
     data?: PaginatedCloudinaryImages;
     error?: string;
 }> {
     try {
-        // If page is 1, start from beginning
-        let currentCursor: string | undefined;
-
-        // For pages > 1, we need the cursor from previous page
-        if (page > 1 && cursorHistory.length >= page - 1) {
-            currentCursor = cursorHistory[page - 2];
+        // For page 1, no cursor needed
+        if (page === 1) {
+            return await getCloudinaryImages({
+                maxResults: pageSize,
+                folder,
+            });
         }
 
-        const result = await getCloudinaryImages({
+        // For pages > 1, we need to fetch sequentially
+        // This is a limitation of Cloudinary's cursor-based pagination
+        let currentCursor: string | undefined;
+        let currentPage = 1;
+
+        // Fetch pages sequentially until we reach the desired page
+        while (currentPage < page) {
+            const result = await getCloudinaryImages({
+                maxResults: pageSize,
+                nextCursor: currentCursor,
+                folder,
+            });
+
+            if (!result.success || !result.data) {
+                return {
+                    success: false,
+                    error: result.error || "Failed to fetch images",
+                };
+            }
+
+            currentCursor = result.data.pagination.nextCursor;
+            currentPage++;
+
+            // If there's no more data, return empty
+            if (!currentCursor && currentPage < page) {
+                return {
+                    success: true,
+                    data: {
+                        images: [],
+                        pagination: {
+                            nextCursor: undefined,
+                            prevCursor: undefined,
+                            hasMore: false,
+                            total: result.data.pagination.total,
+                            currentPage: page,
+                            pageSize: pageSize,
+                        },
+                    },
+                };
+            }
+        }
+
+        // Now fetch the actual page we want
+        const finalResult = await getCloudinaryImages({
             maxResults: pageSize,
             nextCursor: currentCursor,
             folder,
         });
 
-        if (!result.success) {
-            return {
-                success: false,
-                error: result.error || "Failed to fetch images",
-            };
+        if (!finalResult.success || !finalResult.data) {
+            return finalResult;
         }
 
-        if (!result.data) {
-            return {
-                success: false,
-                error: "No data received from Cloudinary",
-            };
-        }
-
-        // Update cursor history (in a real app, this would be stored in session or database)
-        const updatedCursorHistory = [...cursorHistory];
-        if (
-            result.data.pagination.nextCursor &&
-            page === updatedCursorHistory.length + 1
-        ) {
-            updatedCursorHistory.push(result.data.pagination.nextCursor);
-        }
-
-        // Return with updated cursor history
-        const responseData: PaginatedCloudinaryImages = {
-            images: result.data.images,
-            pagination: {
-                ...result.data.pagination,
-                currentPage: page,
-            },
-        };
-
+        // Update the current page number
         return {
             success: true,
-            data: responseData,
+            data: {
+                images: finalResult.data.images,
+                pagination: {
+                    ...finalResult.data.pagination,
+                    currentPage: page,
+                },
+            },
         };
     } catch (error) {
         console.error("Error in getCloudinaryImagesByPage:", error);
@@ -235,17 +252,29 @@ export async function getCloudinaryImagesByPage(
     }
 }
 
-// Helper function to create a more robust pagination system
-interface PaginationSession {
-    cursors: Map<number, string>; // Map page number to cursor
+// Session-based pagination using async functions only
+export interface PaginationSession {
+    cursors: Record<number, string>; // Using Record instead of Map
     currentPage: number;
+    folder: string;
+    pageSize: number;
 }
 
-export async function getCloudinaryImagesWithSession(
+export async function createPaginationSession(
+    folder: string = "uploads",
+    pageSize: number = 12
+): Promise<PaginationSession> {
+    return {
+        cursors: {},
+        currentPage: 1,
+        folder,
+        pageSize,
+    };
+}
+
+export async function getPageWithSession(
     session: PaginationSession,
-    page: number = 1,
-    pageSize: number = 12,
-    folder: string = "uploads"
+    page: number
 ): Promise<{
     success: boolean;
     data?: PaginatedCloudinaryImages & { session: PaginationSession };
@@ -254,23 +283,21 @@ export async function getCloudinaryImagesWithSession(
     try {
         let cursor: string | undefined;
 
-        // Get cursor for requested page from session
         if (page > 1) {
-            cursor = session.cursors.get(page - 1);
+            cursor = session.cursors[page - 1];
 
-            // If we don't have a cursor for this page, we can't navigate directly
             if (!cursor) {
                 return {
                     success: false,
-                    error: `Cannot navigate to page ${page}. Please navigate sequentially.`,
+                    error: `Cannot navigate to page ${page}. Please navigate sequentially from page ${session.currentPage}.`,
                 };
             }
         }
 
         const result = await getCloudinaryImages({
-            maxResults: pageSize,
+            maxResults: session.pageSize,
             nextCursor: cursor,
-            folder,
+            folder: session.folder,
         });
 
         if (!result.success || !result.data) {
@@ -282,22 +309,24 @@ export async function getCloudinaryImagesWithSession(
 
         // Update session with new cursor if available
         if (result.data.pagination.nextCursor) {
-            session.cursors.set(page, result.data.pagination.nextCursor);
+            session.cursors[page] = result.data.pagination.nextCursor;
         }
 
         session.currentPage = page;
 
         // Clean up old cursors to prevent memory issues
         const maxCursorsToKeep = 10;
-        if (session.cursors.size > maxCursorsToKeep) {
-            const pageNumbers = Array.from(session.cursors.keys()).sort(
-                (a, b) => a - b
-            );
-            const pagesToRemove = pageNumbers.slice(
+        const cursorKeys = Object.keys(session.cursors)
+            .map(Number)
+            .sort((a, b) => a - b);
+        if (cursorKeys.length > maxCursorsToKeep) {
+            const keysToRemove = cursorKeys.slice(
                 0,
-                session.cursors.size - maxCursorsToKeep
+                cursorKeys.length - maxCursorsToKeep
             );
-            pagesToRemove.forEach((pageNum) => session.cursors.delete(pageNum));
+            keysToRemove.forEach((key) => {
+                delete session.cursors[key];
+            });
         }
 
         const responseData = {
@@ -314,7 +343,7 @@ export async function getCloudinaryImagesWithSession(
             data: responseData,
         };
     } catch (error) {
-        console.error("Error in getCloudinaryImagesWithSession:", error);
+        console.error("Error in getPageWithSession:", error);
 
         const errorMessage =
             error instanceof Error
@@ -328,38 +357,105 @@ export async function getCloudinaryImagesWithSession(
     }
 }
 
-// Function to get images with simple page-based navigation
-export async function getCloudinaryImagesSimple(
+export async function getNextPageWithSession(
+    session: PaginationSession
+): Promise<{
+    success: boolean;
+    data?: PaginatedCloudinaryImages & { session: PaginationSession };
+    error?: string;
+}> {
+    return await getPageWithSession(session, session.currentPage + 1);
+}
+
+export async function getPrevPageWithSession(
+    session: PaginationSession
+): Promise<{
+    success: boolean;
+    data?: PaginatedCloudinaryImages & { session: PaginationSession };
+    error?: string;
+}> {
+    if (session.currentPage <= 1) {
+        return {
+            success: false,
+            error: "Already on first page",
+        };
+    }
+    return await getPageWithSession(session, session.currentPage - 1);
+}
+
+export async function resetPaginationSession(
+    session: PaginationSession
+): Promise<PaginationSession> {
+    session.cursors = {};
+    session.currentPage = 1;
+    return session;
+}
+
+// Simple pagination function for most use cases
+export async function getPaginatedCloudinaryImages(
     page: number = 1,
     pageSize: number = 12,
     folder: string = "uploads"
 ): Promise<{
     success: boolean;
-    data?: {
-        images: CloudinaryAsset[];
-        pagination: {
-            currentPage: number;
-            pageSize: number;
-            hasMore: boolean;
-            total?: number;
-        };
-    };
+    data?: PaginatedCloudinaryImages;
     error?: string;
+    message?: string;
 }> {
     try {
-        // For simple pagination, we need to fetch sequentially from the beginning
-        // This is less efficient but simpler to implement
-
-        let currentCursor: string | undefined;
-        let images: CloudinaryAsset[] = [];
-        let hasMore = true;
-        let totalCount: number | undefined;
-
-        // We need to fetch from the beginning and count to the desired page
-        for (let currentPage = 1; currentPage <= page; currentPage++) {
-            const result = await getCloudinaryImages({
+        // For page 1, fetch directly
+        if (page === 1) {
+            return await getCloudinaryImages({
                 maxResults: pageSize,
-                nextCursor: currentCursor,
+                folder,
+            });
+        }
+
+        // For subsequent pages, we need to navigate using cursors
+        // This requires storing cursor history on the client side
+        return {
+            success: false,
+            error: "For pages beyond 1, please use cursor-based pagination. Use getCloudinaryImages() with the nextCursor from the previous response.",
+            message:
+                "Cloudinary uses cursor-based pagination. Store the nextCursor from each response to fetch subsequent pages.",
+        };
+    } catch (error) {
+        console.error("Error in getPaginatedCloudinaryImages:", error);
+
+        const errorMessage =
+            error instanceof Error
+                ? error.message
+                : "Failed to fetch paginated images";
+
+        return {
+            success: false,
+            error: errorMessage,
+            message: "Failed to fetch images",
+        };
+    }
+}
+
+// Function to get all images (for small collections)
+export async function getAllCloudinaryImages(
+    folder: string = "uploads",
+    maxImages: number = 100
+): Promise<{
+    success: boolean;
+    data?: CloudinaryAsset[];
+    error?: string;
+    message?: string;
+}> {
+    try {
+        const allImages: CloudinaryAsset[] = [];
+        let nextCursor: string | undefined;
+        let hasMore = true;
+        let iteration = 0;
+        const maxIterations = Math.ceil(maxImages / 100); // Cloudinary max per request is 500
+
+        while (hasMore && iteration < maxIterations) {
+            const result = await getCloudinaryImages({
+                maxResults: 100, // Fetch in batches of 100
+                nextCursor,
                 folder,
             });
 
@@ -367,173 +463,71 @@ export async function getCloudinaryImagesSimple(
                 return {
                     success: false,
                     error: result.error || "Failed to fetch images",
+                    message: "Failed during batch fetch",
                 };
             }
-
-            // Store total count from first request
-            if (currentPage === 1) {
-                totalCount = result.data.pagination.total;
+            if (result.data) {
+                allImages.push(...(result.data.images as CloudinaryAsset[]));
             }
-
-            // If this is the page we want, store the images
-            if (currentPage === page) {
-                images = result.data.images as CloudinaryAsset[];
-            }
-
-            // Update cursor for next iteration
-            currentCursor = result.data.pagination.nextCursor;
+            nextCursor = result.data.pagination.nextCursor;
             hasMore = result.data.pagination.hasMore;
+            iteration++;
 
-            // If there's no more data and we haven't reached our page, return empty
-            if (!hasMore && currentPage < page) {
-                return {
-                    success: true,
-                    data: {
-                        images: [],
-                        pagination: {
-                            currentPage: page,
-                            pageSize: pageSize,
-                            hasMore: false,
-                            total: totalCount,
-                        },
-                    },
-                };
+            // Break if we've reached the max
+            if (allImages.length >= maxImages) {
+                break;
             }
         }
 
         return {
             success: true,
-            data: {
-                images: images,
-                pagination: {
-                    currentPage: page,
-                    pageSize: pageSize,
-                    hasMore: hasMore,
-                    total: totalCount,
-                },
-            },
+            data: allImages.slice(0, maxImages),
+            message: `Fetched ${allImages.length} images from Cloudinary`,
         };
     } catch (error) {
-        console.error("Error in getCloudinaryImagesSimple:", error);
+        console.error("Error in getAllCloudinaryImages:", error);
 
         const errorMessage =
-            error instanceof Error ? error.message : "Failed to fetch images";
+            error instanceof Error
+                ? error.message
+                : "Failed to fetch all images";
 
         return {
             success: false,
             error: errorMessage,
+            message: "Failed to fetch images",
         };
     }
 }
 
-// Create a session manager for multi-page navigation
-export class CloudinaryPaginationManager {
-    private cursors: Map<number, string> = new Map();
-    private currentPage: number = 1;
-    private folder: string;
-    private pageSize: number;
-
-    constructor(folder: string = "uploads", pageSize: number = 12) {
-        this.folder = folder;
-        this.pageSize = pageSize;
-    }
-
-    async getPage(page: number): Promise<{
-        success: boolean;
-        data?: PaginatedCloudinaryImages;
-        error?: string;
-    }> {
-        try {
-            let cursor: string | undefined;
-
-            if (page > 1) {
-                cursor = this.cursors.get(page - 1);
-
-                if (!cursor) {
-                    return {
-                        success: false,
-                        error: `Cannot navigate to page ${page}. Please navigate sequentially from page ${this.currentPage}.`,
-                    };
-                }
-            }
-
-            const result = await getCloudinaryImages({
-                maxResults: this.pageSize,
-                nextCursor: cursor,
-                folder: this.folder,
-            });
-
-            if (!result.success || !result.data) {
-                return {
-                    success: false,
-                    error: result.error || "Failed to fetch images",
-                };
-            }
-
-            // Store cursor for next page
-            if (result.data.pagination.nextCursor) {
-                this.cursors.set(page, result.data.pagination.nextCursor);
-            }
-
-            this.currentPage = page;
-
-            return {
-                success: true,
-                data: {
-                    images: result.data.images,
-                    pagination: {
-                        ...result.data.pagination,
-                        currentPage: page,
-                    },
-                },
-            };
-        } catch (error) {
-            const errorMessage =
-                error instanceof Error ? error.message : "Failed to fetch page";
-
-            return {
-                success: false,
-                error: errorMessage,
-            };
-        }
-    }
-
-    async next(): Promise<{
-        success: boolean;
-        data?: PaginatedCloudinaryImages;
-        error?: string;
-    }> {
-        return this.getPage(this.currentPage + 1);
-    }
-
-    async prev(): Promise<{
-        success: boolean;
-        data?: PaginatedCloudinaryImages;
-        error?: string;
-    }> {
-        if (this.currentPage <= 1) {
-            return {
-                success: false,
-                error: "Already on first page",
-            };
-        }
-        return this.getPage(this.currentPage - 1);
-    }
-
-    getCurrentPage(): number {
-        return this.currentPage;
-    }
-
-    reset(): void {
-        this.cursors.clear();
-        this.currentPage = 1;
-    }
+// Helper function to get images by tag
+export async function getCloudinaryImagesByTag(
+    tag: string,
+    options: Omit<CloudinaryListOptions, "tags"> = {}
+): Promise<{
+    success: boolean;
+    data?: PaginatedCloudinaryImages;
+    error?: string;
+    message?: string;
+}> {
+    return await getCloudinaryImages({
+        ...options,
+        tags: [tag],
+    });
 }
 
-// Function to initialize pagination
-export function createCloudinaryPagination(
-    folder: string = "uploads",
-    pageSize: number = 12
-): CloudinaryPaginationManager {
-    return new CloudinaryPaginationManager(folder, pageSize);
+// Helper function to search images by prefix (filename starts with)
+export async function searchCloudinaryImages(
+    searchTerm: string,
+    options: CloudinaryListOptions = {}
+): Promise<{
+    success: boolean;
+    data?: PaginatedCloudinaryImages;
+    error?: string;
+    message?: string;
+}> {
+    return await getCloudinaryImages({
+        ...options,
+        prefix: searchTerm,
+    });
 }

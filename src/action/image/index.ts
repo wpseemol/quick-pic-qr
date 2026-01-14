@@ -80,6 +80,7 @@ export async function uploadImagesCloudinary(
                                 public_id: `image_${Date.now()}_${Math.random()
                                     .toString(36)
                                     .substring(7)}`,
+
                                 resource_type: "auto", // Automatically detect type
                                 transformation: [
                                     { quality: "auto:good" }, // Optimize quality

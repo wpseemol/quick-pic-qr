@@ -1,9 +1,13 @@
 // app/page.tsx
+import { getCloudinaryImagesByPage } from "@/action/get-images";
 import HeroUploadArea from "./_components/HeroUploadArea";
 import ImageCard from "./_components/ImageCard";
-import { ImageData } from "@/types/image";
 
-export default function GalleryPage() {
+export default async function GalleryPage() {
+    const response = await getCloudinaryImagesByPage();
+
+    console.log("data here", response);
+
     return (
         <main className="container mx-auto px-6 lg:px-20 py-8">
             {/* Hero Section / Upload Area */}
@@ -49,9 +53,12 @@ export default function GalleryPage() {
 
             {/* Gallery Grid */}
             <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {images.map((image) => (
-                    <ImageCard key={image.id} image={image} />
-                ))}
+                {response.success &&
+                    response.data &&
+                    response.data.images.length > 0 &&
+                    response.data.images.map((image) => (
+                        <ImageCard key={image.asset_id} image={image} />
+                    ))}
 
                 {/* Empty State / Add Card */}
                 <div className="border-2 border-dashed border-[#e8f3f3] rounded-xl flex flex-col items-center justify-center p-8 bg-white/40 group hover:border-primary transition-colors cursor-pointer min-h-100">
@@ -100,69 +107,6 @@ export default function GalleryPage() {
         </main>
     );
 }
-
-const images: ImageData[] = [
-    {
-        id: "1",
-        filename: "golden_peak.jpg",
-        shortUrl: "vault.io/s/73k2n",
-        uploadTime: "2h ago",
-        size: "2.4 MB",
-        alt: "Vibrant orange sunset over mountains",
-        imageUrl:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuAjSh2FwhSF5NKarXr1fyD2Hv37CC1Pj1b6IO4ErTjt0gTudCD_tWaBue31pbymYGOyJJxPSXpkUgtS5cxO0FHVOnjepUDTyvVVj7MzW7jaJHFyqWP03cbFsNb9cOodBr5UIg0b84ompgVA8piUK-Kv2a6WH-b_tuBzj_VTzorOrLpDLXMm1S9IXhWJI1VLgc8yXy5J2EzcJTBqaMky_bMnEkS_8oYEmc9SgXZO1rQK5uSN73GGZT2y3jxMNIM2do_0cZd2DJpw7Ag",
-    },
-    {
-        id: "2",
-        filename: "azure_depths.png",
-        shortUrl: "vault.io/s/92m1p",
-        uploadTime: "5h ago",
-        size: "4.1 MB",
-        alt: "Deep blue ocean waves aerial view",
-        imageUrl:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuB_HL_JAns4eA7kYWsA6QSkrja1QwdGMlqSZRfD6o7CueEIpMIw90qez-SKOYiZTu2y1DQODf8DL-NHrJhQCER9wbTDiUVvV0K812a_8pBezGVLalV-_DR6zuBgSaP_gAhVIVNk9ft8xOO-rQ2Kr3kQ5MWrGQJqOTdcfmwzucaMzDdVQhOzGosVUh5w-JbqcMHceGmfD4m1nXDfeIsBinzd2HyasbiEgopM0sGLQfu5PkZDaqDxt7SzkRefzkCFRsxzbONEtzr_w2Q",
-    },
-    {
-        id: "3",
-        filename: "pure_geometry.jpg",
-        shortUrl: "vault.io/s/11q4z",
-        uploadTime: "Yesterday",
-        size: "1.8 MB",
-        alt: "Minimalist architectural stairs white",
-        imageUrl:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuCYyrvTa7SvQQo0VYw-KlW2MgKy6h2hr7TWFDD-UXlsykG5cg27pCUCnw9_8GGw914zmsD1WwgEN9NzIeol-7AUPpoV4IP7XW0ns0RW-TXiea-3RQOSKIIKzDyyxepVuHUzzjYuEnFewzyAQGFEuBM4_ojGvrK_yuE-a5Yp1AbdLeFehdXSfBXWTpf8QZUkSksLiDg7-jmDhcSZ4SQwLCAnlOkljYoZtBDJNq0C_SD__5RoOJz_7eEYNFALDU52DbbzuPg1BmP0m0M",
-    },
-    {
-        id: "4",
-        filename: "silent_wood.png",
-        shortUrl: "vault.io/s/55r9t",
-        uploadTime: "2d ago",
-        size: "3.2 MB",
-        alt: "Forest mist morning light",
-        imageUrl:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuC55esd_x_q2051CzK6EqaRKx0MOvNwr165n4tctDoes-6GDEk0ajChzWR89QSCgCiXB2tqfbf8rh6I0bjAbRx8znCwS4pTNxag5XRCyV0LsE5Kop6r428y3EXRSaREfkokdVn8WZfTaJvZEZK97HjL57_3zO4GqKdXfi6RdTAldkX33-eh9p7moHfkHgO2DB367bfT9gVjZvnD331JXp-3Tu1nnKvXk5deSeTmNsAfiV7ghzPZ8v6nWJT3YFFvJL1kbkAcDRXoGHo",
-    },
-    {
-        id: "5",
-        filename: "neon_flow.jpg",
-        shortUrl: "vault.io/s/88w2v",
-        uploadTime: "3d ago",
-        size: "5.7 MB",
-        alt: "Abstract neon light patterns",
-        imageUrl:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuCQLP5k6zONJeEhTd-BoClYWAWRvOaC1jlDE18C2gCOmlzW2YV8kwrVvGavuowX5GIhHdCULsJLdvRx3v5fDb8liRew1t1MonaGZCdm0JW4N5sCylFoRts1ZxJhz7F6u-4kthpkTLYEjwhyL39Zl8Blq39wq_HudNxMPk5_9tmijjc7dbMi6DDuHAMEhZNqfgkwxfa7gA7Hdpgja0au8-rNOpTwjOYeaPPlNkwswI2d-xz2UY4UyvbHB9fGTYE0VlVKwfmjvki2p7w",
-    },
-    {
-        id: "6",
-        filename: "urban_night.jpg",
-        shortUrl: "vault.io/s/33x1u",
-        uploadTime: "4d ago",
-        size: "2.9 MB",
-        alt: "Cyberpunk city street at night",
-        imageUrl:
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuBG77Nwn9zzwUVTDlz6yil0fwS8GL58Z7ZEPPLdFKyfkzZ7TAXBR1BCbjj5DVCZwn32A15NuuFMU6MDDK3yq3bnNse2zFdyTm-Bbt-pZ3AVorfnMqUp03SxLdCrO3yqfxqSBFinWrzyChyKXLVMqmL-E9cjdUMKk3hVrziG_ANE0VrXiZk-DiA1Bpc4lsOE6VkNZ5aGjXffcBkP6p_4BODdLbiICeDpceefflyDQwiye8xfUf3Y3jfkjPEzecGgw3MR9Nte8kubZrI",
-    },
-];
 
 const filterButtons = [
     { label: "Latest", icon: "keyboard_arrow_down", isActive: true },

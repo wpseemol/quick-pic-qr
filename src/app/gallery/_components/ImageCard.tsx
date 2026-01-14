@@ -1,88 +1,171 @@
-// components/ImageCard.tsx
+// components/SimpleImageCard.tsx
 "use client";
 
+import { useState } from "react";
 import { CloudinaryImage } from "@/types/cloudinary";
 import { encodePath } from "@/utils/encode-decod";
+import { deleteCloudinaryImage } from "@/action/image";
 
 import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-interface ImageCardProps {
+interface SimpleImageCardProps {
     image: CloudinaryImage;
+    onDeleteSuccess?: (publicId: string) => void;
 }
 
-export default function ImageCard({ image }: ImageCardProps) {
+export default function SimpleImageCard({
+    image,
+    onDeleteSuccess,
+}: SimpleImageCardProps) {
     const router = useRouter();
+    const [isDeleting, setIsDeleting] = useState(false);
 
-    const handleFavorite = () => {
-        // Add favorite functionality here
-        // console.log("Favorite clicked for:", image.public_id);
+    const handleDelete = async () => {
+        if (
+            !confirm(
+                `Delete "${
+                    image.original_filename || image.public_id.split("/").pop()
+                }"?`
+            )
+        ) {
+            return;
+        }
+
+        // try {
+        //     setIsDeleting(true);
+        //     const result = await deleteCloudinaryImage(image.public_id);
+
+        //     if (result.success) {
+        //         onDeleteSuccess?.(image.public_id);
+        //     } else {
+        //         alert(`Delete failed: ${result.error || "Unknown error"}`);
+        //     }
+        // } catch (error) {
+        //     alert(`Delete failed: ${error instanceof Error ? error.message : "Unknown error"}`);
+        // } finally {
+        //     setIsDeleting(false);
+        // }
+        setIsDeleting(false);
     };
 
-    const handleGenerateQR = () => {
-        // Add QR generation functionality here
+    const handleQRClick = () => {
         router.push(`/gallery/${encodePath(image.public_id)}`);
     };
 
+    const formatFileSize = (bytes: number) => {
+        if (bytes < 1024) return bytes + " B";
+        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
+        return (bytes / (1024 * 1024)).toFixed(1) + " MB";
+    };
+
     return (
-        <div className="bg-white rounded-xl overflow-hidden custom-shadow card-hover transition-all duration-300 flex flex-col border border-custom-primary/20">
-            <div className="relative group aspect-3/4 overflow-hidden">
-                {/* Using next/image for better performance */}
-                <div className="w-full h-full relative overflow-hidden">
-                    <Image
-                        src={image.secure_url}
-                        alt={image.original_filename || "quick image qr"}
-                        fill
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
-                        className="object-cover transition-transform duration-500 group-hover:scale-110"
-                        // Prioritize first couple images
-                    />
-                </div>
-                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity p-4 flex flex-col justify-between">
-                    <div className="flex justify-end">
-                        <button
-                            onClick={handleFavorite}
-                            className="bg-white/90 backdrop-blur p-2 rounded-full text-font-color hover:bg-custom-primary transition-colors"
-                            aria-label="Add to favorites"
-                        >
-                            <span className="material-symbols-outlined text-[20px]">
-                                favorite
-                            </span>
-                        </button>
-                    </div>
+        <div className="bg-white rounded-lg overflow-hidden shadow-sm border border-gray-200 hover:shadow-md transition-shadow relative group">
+            {/* Delete Button (Always Visible) */}
+            <button
+                onClick={handleDelete}
+                disabled={isDeleting}
+                className="absolute top-2 right-2 z-10 p-2 bg-white/90 backdrop-blur-sm text-red-600 rounded-full hover:bg-red-600 hover:text-white transition-colors shadow-sm disabled:opacity-50"
+                title="Delete image"
+            >
+                {isDeleting ? (
+                    <svg
+                        className="animate-spin h-4 w-4"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                    >
+                        <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                        ></circle>
+                        <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                    </svg>
+                ) : (
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                    >
+                        <path d="M3 6h18" />
+                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                        <line x1="10" y1="11" x2="10" y2="17" />
+                        <line x1="14" y1="11" x2="14" y2="17" />
+                    </svg>
+                )}
+            </button>
+
+            {/* Image */}
+            <div
+                className="relative aspect-square overflow-hidden cursor-pointer"
+                onClick={handleQRClick}
+            >
+                <Image
+                    src={image.secure_url}
+                    alt={image.original_filename || "Image"}
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    {/* QR Icon on Hover */}
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="32"
+                        height="32"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="white"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                    >
+                        <rect x="3" y="3" width="5" height="5" rx="1" />
+                        <rect x="16" y="3" width="5" height="5" rx="1" />
+                        <rect x="3" y="16" width="5" height="5" rx="1" />
+                        <path d="M21 16h-3a2 2 0 0 0-2 2v3" />
+                        <path d="M21 21v.01" />
+                        <path d="M12 7v3a2 2 0 0 1-2 2H7" />
+                        <path d="M3 12h.01" />
+                        <path d="M12 3h.01" />
+                        <path d="M12 16v.01" />
+                        <path d="M16 12h1" />
+                        <path d="M21 12v.01" />
+                        <path d="M12 21h-1" />
+                    </svg>
                 </div>
             </div>
-            <div className="p-5 space-y-3">
-                <div>
-                    <h4 className="font-bold text-font-color truncate">
-                        {image.original_filename}
-                    </h4>
-                    <p className="text-custom-primary text-xs font-medium">
-                        {image.original_filename}
-                    </p>
-                    {/* <p className="text-[#509595] text-[11px] uppercase tracking-wider mt-1">
-                        Uploaded {image.} • {image.size}
-                    </p> */}
+
+            {/* Info */}
+            <div className="p-3">
+                <h4
+                    className="font-medium text-sm text-gray-900 truncate mb-1"
+                    title={image.original_filename}
+                >
+                    {image.original_filename ||
+                        image.public_id.split("/").pop()}
+                </h4>
+                <div className="flex justify-between text-xs text-gray-500">
+                    <span>{image.format.toUpperCase()}</span>
+                    <span>{formatFileSize(image.bytes)}</span>
                 </div>
-                <div className="flex items-center gap-2">
-                    <Link
-                        href={image.secure_url}
-                        target="_blank"
-                        className="flex-1 bg-custom-primary text-font-color text-sm font-bold py-2.5 rounded-lg text-center hover:bg-custom-primary/90 transition-colors"
-                    >
-                        View Image
-                    </Link>
-                    <button
-                        onClick={handleGenerateQR}
-                        className="p-2.5 bg-[#e8f3f3] text-font-color rounded-lg hover:bg-custom-primary/20 transition-colors"
-                        title="Generate QR"
-                        aria-label="Generate QR code"
-                    >
-                        <span className="material-symbols-outlined text-[20px]">
-                            qr_code_2
-                        </span>
-                    </button>
+                <div className="text-xs text-gray-400 mt-1">
+                    {image.width}×{image.height}
                 </div>
             </div>
         </div>

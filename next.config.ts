@@ -1,8 +1,28 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
-  reactCompiler: true,
+    /* config options here */
+    reactCompiler: true,
+    images: {
+        remotePatterns: [
+            {
+                protocol: "https",
+                hostname: "lh3.googleusercontent.com",
+                port: "",
+            },
+            {
+                protocol: "https",
+                hostname: "firebasestorage.googleapis.com",
+                port: "",
+            },
+
+            {
+                protocol: "https",
+                hostname: "res.cloudinary.com",
+                port: "",
+            },
+        ],
+    },
 };
 
 export default nextConfig;

@@ -1,0 +1,4 @@
+{
+    // tailwind css theme error ignore
+    "css.lint.unknownAtRules": "ignore"
+}

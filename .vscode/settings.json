@@ -1,4 +1,6 @@
 {
     // tailwind css theme error ignore
-    "css.lint.unknownAtRules": "ignore"
+    "css.lint.unknownAtRules": "ignore",
+    "workbench.colorTheme": "Learn with Sumit - Peace of the eye",
+    "cSpell.words": ["uuidv"]
 }

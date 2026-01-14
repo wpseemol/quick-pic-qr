@@ -5,7 +5,7 @@ export default function Footer() {
             <div className="mx-auto container px-6">
                 <div className="flex flex-col items-center justify-between gap-8 md:flex-row">
                     <div className="flex items-center gap-3">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-[#0e1b1b]">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-font-color">
                             <span className="material-symbols-outlined text-lg font-bold">
                                 bolt
                             </span>
@@ -30,7 +30,7 @@ export default function Footer() {
                     </div>
                     <div className="flex gap-4">
                         <a
-                            className="flex h-10 w-10 items-center justify-center rounded-full bg-[#f9fafa] text-[#0e1b1b] hover:bg-primary transition-colors"
+                            className="flex h-10 w-10 items-center justify-center rounded-full bg-[#f9fafa] text-font-color hover:bg-primary transition-colors"
                             href="#"
                         >
                             <span className="material-symbols-outlined text-xl">
@@ -38,7 +38,7 @@ export default function Footer() {
                             </span>
                         </a>
                         <a
-                            className="flex h-10 w-10 items-center justify-center rounded-full bg-[#f9fafa] text-[#0e1b1b] hover:bg-primary transition-colors"
+                            className="flex h-10 w-10 items-center justify-center rounded-full bg-[#f9fafa] text-font-color hover:bg-primary transition-colors"
                             href="#"
                         >
                             <span className="material-symbols-outlined text-xl">
@@ -48,7 +48,12 @@ export default function Footer() {
                     </div>
                 </div>
                 <div className="mt-8 border-t border-[#e8f3f3] pt-8 text-center text-xs text-[#4e6b6b]/60">
-                    © 2024 Upload &amp; Share Inc. All rights reserved.
+                    ©{" "}
+                    {
+                        // get current year.
+                        new Date().getFullYear()
+                    }{" "}
+                    Upload &amp; Share Inc. All rights reserved.
                 </div>
             </div>
         </footer>

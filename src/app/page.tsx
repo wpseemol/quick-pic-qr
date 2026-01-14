@@ -1,4 +1,5 @@
 import Image from "next/image";
+import HeroTopLeftInput from "./_components/HeroTopLeftInput";
 
 export default function HomePage() {
     return (
@@ -8,7 +9,7 @@ export default function HomePage() {
                 <section className="mx-auto px-6 py-12 md:py-20">
                     <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
                         <div className="flex flex-col gap-6">
-                            <div className="inline-flex w-fit items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-bold uppercase tracking-wider text-[#0e1b1b]">
+                            <div className="inline-flex w-fit items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-bold uppercase tracking-wider text-font-color">
                                 <span className="material-symbols-outlined text-sm">
                                     qr_code_2
                                 </span>
@@ -20,7 +21,7 @@ export default function HomePage() {
                                     Images Instantly
                                 </span>
                             </h1>
-                            <p className="max-w-[500px] text-lg leading-relaxed text-[#4e6b6b]">
+                            <p className="max-w-125 text-lg leading-relaxed text-[#4e6b6b]">
                                 The fastest way to get your photos from your
                                 desktop to any device. Just drag, drop, and scan
                                 to share your moments.
@@ -62,8 +63,8 @@ export default function HomePage() {
                         </div>
 
                         {/* Interactive Upload Area */}
-                        <div className="relative">
-                            <div className="upload-dashed group relative flex min-h-[400px] flex-col items-center justify-center bg-white p-8 transition-all hover:bg-primary/5">
+                        {/* <div className="relative">
+                            <div className="upload-dashed group relative flex min-h-100 flex-col items-center justify-center bg-white p-8 transition-all hover:bg-primary/5">
                                 <div className="flex flex-col items-center gap-6 text-center">
                                     <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/20 text-primary transition-transform group-hover:scale-110">
                                         <span className="material-symbols-outlined text-4xl">
@@ -79,7 +80,7 @@ export default function HomePage() {
                                             20MB)
                                         </p>
                                     </div>
-                                    <button className="mt-4 flex min-w-[160px] items-center justify-center gap-2 rounded-xl bg-[#0e1b1b] px-6 py-4 text-white font-bold transition-all hover:bg-[#1a2e2e] shadow-lg">
+                                    <button className="mt-4 flex min-w-40 items-center justify-center gap-2 rounded-xl bg-font px-6 py-4 text-white font-bold transition-all hover:bg-[#1a2e2e] shadow-lg">
                                         <span className="material-symbols-outlined">
                                             add_photo_alternate
                                         </span>
@@ -87,9 +88,10 @@ export default function HomePage() {
                                     </button>
                                 </div>
                             </div>
-                            {/* Decorative element */}
+                           
                             <div className="absolute -bottom-6 -right-6 -z-10 h-32 w-32 rounded-full bg-primary/20 blur-3xl"></div>
-                        </div>
+                        </div> */}
+                        <HeroTopLeftInput />
                     </div>
                 </section>
 
@@ -117,7 +119,7 @@ export default function HomePage() {
                         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
                             {/* Image Card 1 */}
                             <div className="group relative overflow-hidden rounded-xl bg-white neo-shadow transition-all hover:-translate-y-1">
-                                <div className="relative aspect-[3/4] w-full">
+                                <div className="relative aspect-3/4 w-full">
                                     <Image
                                         src="https://lh3.googleusercontent.com/aida-public/AB6AXuDSeiv3wSD-to5j-TcGCtpN2R-tYI-pAUYsMC5ED7IqcYD0MMlvjyaHTMRWUBX-xyIJ6lBNPMVuR_FhPg4HiM695Clwc0ejHQJPZ_7-tEGJ-NQhFFWLBBuSDJeGrtrEd4RziI3DSik3Rbww5srhq-9JGu3I_lxqU4nINr8A8Dy1Se3l6haZH-_9lb3DJYmL6qn7YgMoXdgz3NyRfg0iVAzvKNj3bG3rk_GunYecmau2XQZI_7jcjJzfDPlHBE6-NaYL5G_27GxfeRA"
                                         alt="Dramatic mountain landscape during foggy sunrise"
@@ -126,7 +128,7 @@ export default function HomePage() {
                                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                                     />
                                 </div>
-                                <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/80 via-transparent to-transparent p-4 opacity-0 transition-opacity group-hover:opacity-100">
+                                <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-top from-black/80 via-transparent to-transparent p-4 opacity-0 transition-opacity group-hover:opacity-100">
                                     <div className="flex items-center justify-between">
                                         <p className="text-sm font-bold text-white">
                                             mountain_high.jpg
@@ -149,7 +151,7 @@ export default function HomePage() {
 
                             {/* Image Card 2 */}
                             <div className="group relative overflow-hidden rounded-xl bg-white neo-shadow transition-all hover:-translate-y-1">
-                                <div className="relative aspect-[3/4] w-full">
+                                <div className="relative aspect-3/4 w-full">
                                     <Image
                                         src="https://lh3.googleusercontent.com/aida-public/AB6AXuDHtCEoVfqUFMRbuj61T0VddOoOqeikr8CqIgPTJOB13OnWLLztU-thNtrDMIvyLn2WAvB-diCMZEq0gKyBepnz30tXA0rJMqGvs8dAG-kUJn6OjdAKs576z7-Z5WukMtU8t9d5a18uwvi4dkKtUN_JOrAxkgJt_eLEKlnUrqzTGUv-slPu0dEF6ijeenMXX2WbAV6xWhpB-Diuo7LMnuQUg7Pnwkl8YkbSygRiXHRgZLkMrGvkshavxCl8CxisHV3C0Df0gpScxAk"
                                         alt="Aerial view of turquoise ocean waves and beach"
@@ -158,7 +160,7 @@ export default function HomePage() {
                                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                                     />
                                 </div>
-                                <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/80 via-transparent to-transparent p-4 opacity-0 transition-opacity group-hover:opacity-100">
+                                <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-top from-black/80 via-transparent to-transparent p-4 opacity-0 transition-opacity group-hover:opacity-100">
                                     <div className="flex items-center justify-between">
                                         <p className="text-sm font-bold text-white">
                                             summer_vibes.png
@@ -181,7 +183,7 @@ export default function HomePage() {
 
                             {/* Image Card 3 */}
                             <div className="group relative overflow-hidden rounded-xl bg-white neo-shadow transition-all hover:-translate-y-1">
-                                <div className="relative aspect-[3/4] w-full">
+                                <div className="relative aspect-3/4 w-full">
                                     <Image
                                         src="https://lh3.googleusercontent.com/aida-public/AB6AXuDXL_r8rzIJngew3zqLrRXDSmC-_XBO0sToZ9Xv3dcHgVKnwnqj2NWtiTJkP4w3YXErxqA0xfH5fnzSrQhARjVXwyXT5WvB-SzHoKVwb_bYTr19i2KuJWR19IW8XqjKm0aIczdmUOPe_px1YhIHWzRLOXbs3xqT_ICNxqzBMMhs4f2dKESBRVgYTtlRXyvomz3i67MDj8Aa6yiViQYXXhfSnjcogVVVUSpZoXupX708cvRsrukwnjIVuoQ9LapXd1w-mHLh23XAkIU"
                                         alt="Sunlight filtering through dense green forest trees"
@@ -190,7 +192,7 @@ export default function HomePage() {
                                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                                     />
                                 </div>
-                                <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/80 via-transparent to-transparent p-4 opacity-0 transition-opacity group-hover:opacity-100">
+                                <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-top from-black/80 via-transparent to-transparent p-4 opacity-0 transition-opacity group-hover:opacity-100">
                                     <div className="flex items-center justify-between">
                                         <p className="text-sm font-bold text-white">
                                             nature_deep.jpg
@@ -213,7 +215,7 @@ export default function HomePage() {
 
                             {/* Image Card 4 */}
                             <div className="group relative overflow-hidden rounded-xl bg-white neo-shadow transition-all hover:-translate-y-1">
-                                <div className="relative aspect-[3/4] w-full">
+                                <div className="relative aspect-3/4 w-full">
                                     <Image
                                         src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_b6aaRJplBKrbGQRxPqJiO6CGXJVmgtMlDNsEvKJC8_1jl1bOrfQalSqnlMITX8-AHNsUs4bjzJ2DM2RlP5Zc8ffAllSv5Y7ppQWUVbRsaYELSmK_oMoHxYy7YKfBJ9D31fw2lrDG2pVEzI6o2w90LCQAaMq0EMtr3YSUUngzPVyVMfvRLqoXqYEwqhDvevmve2ywXgHDu2gJ4dGTeN8M1fdT-ggQN1fKGWK_dyxqSzgFVLvvHZyfLPaeB0PgPAXkceqXrrRCSAE"
                                         alt="Close up of a neon-lit futuristic city street"
@@ -222,7 +224,7 @@ export default function HomePage() {
                                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                                     />
                                 </div>
-                                <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/80 via-transparent to-transparent p-4 opacity-0 transition-opacity group-hover:opacity-100">
+                                <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-top from-black/80 via-transparent to-transparent p-4 opacity-0 transition-opacity group-hover:opacity-100">
                                     <div className="flex items-center justify-between">
                                         <p className="text-sm font-bold text-white">
                                             cyber_city.webp
@@ -247,7 +249,7 @@ export default function HomePage() {
                 </section>
 
                 {/* Sharing Success State Concept (Static Preview) */}
-                <section className="mx-auto max-w-[1200px] px-6 py-20">
+                <section className="mx-auto container px-6 py-20">
                     <div className="flex flex-col items-center gap-12 lg:flex-row">
                         <div className="flex flex-1 flex-col gap-6">
                             <h2 className="text-3xl font-extrabold tracking-tight md:text-4xl">
@@ -256,7 +258,7 @@ export default function HomePage() {
                             </h2>
                             <div className="space-y-4">
                                 <div className="flex items-start gap-4">
-                                    <div className="mt-1 flex h-6 w-6 items-center justify-center rounded-full bg-primary text-[#0e1b1b]">
+                                    <div className="mt-1 flex h-6 w-6 items-center justify-center rounded-full bg-primary text-font-color">
                                         <span className="material-symbols-outlined text-sm font-bold">
                                             check
                                         </span>
@@ -272,7 +274,7 @@ export default function HomePage() {
                                     </div>
                                 </div>
                                 <div className="flex items-start gap-4">
-                                    <div className="mt-1 flex h-6 w-6 items-center justify-center rounded-full bg-primary text-[#0e1b1b]">
+                                    <div className="mt-1 flex h-6 w-6 items-center justify-center rounded-full bg-primary text-font-color">
                                         <span className="material-symbols-outlined text-sm font-bold">
                                             check
                                         </span>
@@ -288,7 +290,7 @@ export default function HomePage() {
                                     </div>
                                 </div>
                                 <div className="flex items-start gap-4">
-                                    <div className="mt-1 flex h-6 w-6 items-center justify-center rounded-full bg-primary text-[#0e1b1b]">
+                                    <div className="mt-1 flex h-6 w-6 items-center justify-center rounded-full bg-primary text-font-color">
                                         <span className="material-symbols-outlined text-sm font-bold">
                                             check
                                         </span>
@@ -306,7 +308,7 @@ export default function HomePage() {
                             </div>
                         </div>
                         <div className="w-full flex-1 md:max-w-md">
-                            <div className="rounded-3xl bg-[#0e1b1b] p-8 text-white shadow-2xl">
+                            <div className="rounded-3xl bg-font-color p-8 text-white shadow-2xl">
                                 <div className="mb-6 flex items-center justify-between">
                                     <h3 className="text-lg font-bold">
                                         Share Preview

@@ -8,11 +8,14 @@ export default function Header() {
             <div className="mx-auto flex items-center justify-between container">
                 <div className="flex items-center gap-3">
                     <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-font-color">
-                        <span className="material-symbols-outlined font-bold">
-                            bolt
-                        </span>
+                        <Link href="/">
+                            <span className="material-symbols-outlined font-bold">
+                                bolt
+                            </span>
+                        </Link>
                     </div>
                     <h2 className="text-xl font-extrabold tracking-tight">
+                        <Link href="/"></Link>
                         Upload &amp; Share
                     </h2>
                 </div>

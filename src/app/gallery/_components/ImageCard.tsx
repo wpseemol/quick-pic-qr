@@ -8,6 +8,7 @@ import { deleteCloudinaryImage } from "@/action/image";
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { decodeOriginalName } from "@/utils/file-name";
 
 interface SimpleImageCardProps {
     image: CloudinaryImage;
@@ -22,11 +23,11 @@ export default function SimpleImageCard({
     const [isDeleting, setIsDeleting] = useState(false);
 
     const handleDelete = async () => {
+        console.log(image);
+
         if (
             !confirm(
-                `Delete "${
-                    image.original_filename || image.public_id.split("/").pop()
-                }"?`
+                `width: ${image.width}, hight: ${image.height}, public id: ${image.public_id}`
             )
         ) {
             return;
@@ -58,6 +59,8 @@ export default function SimpleImageCard({
         if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
         return (bytes / (1024 * 1024)).toFixed(1) + " MB";
     };
+
+    const original_filename = decodeOriginalName(image.public_id);
 
     return (
         <div className="bg-white rounded-lg overflow-hidden shadow-sm border border-gray-200 hover:shadow-md transition-shadow relative group">
@@ -117,7 +120,7 @@ export default function SimpleImageCard({
             >
                 <Image
                     src={image.secure_url}
-                    alt={image.original_filename || "Image"}
+                    alt={original_filename || "Image"}
                     fill
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     className="object-cover group-hover:scale-105 transition-transform duration-300"
@@ -155,10 +158,9 @@ export default function SimpleImageCard({
             <div className="p-3">
                 <h4
                     className="font-medium text-sm text-gray-900 truncate mb-1"
-                    title={image.original_filename}
+                    title={original_filename}
                 >
-                    {image.original_filename ||
-                        image.public_id.split("/").pop()}
+                    {original_filename}
                 </h4>
                 <div className="flex justify-between text-xs text-gray-500">
                     <span>{image.format.toUpperCase()}</span>

@@ -163,3 +163,59 @@ export interface CloudinaryListOptions {
     prefix?: string;
     context?: boolean;
 }
+
+// types/cloudinary.ts - Add these interfaces
+export interface CloudinaryImageDetails {
+    asset_id: string;
+    public_id: string;
+    format: string;
+    version: number;
+    resource_type: "image" | "video" | "raw";
+    type: "upload" | "private" | "authenticated";
+    created_at: string;
+    uploaded_at: string;
+    bytes: number;
+    width: number;
+    height: number;
+    url: string;
+    secure_url: string;
+    original_filename: string;
+    folder: string;
+    tags?: string[];
+    context?: Record<string, string>;
+    metadata?: Record<string, unknown>;
+    colors?: Array<[string, number]>;
+    faces?: Array<number[]>;
+    quality_analysis?: {
+        focus: number;
+        quality: number;
+    };
+    pages?: number;
+    exif?: Record<string, unknown>;
+    image_metadata?: Record<string, unknown>;
+    phash?: string;
+    predominant?: {
+        google: Array<[string, number]>;
+    };
+    placeholder?: boolean;
+    access_mode: "public" | "authenticated";
+    access_control?: Array<{
+        access_type: string;
+        start: string;
+        end: string;
+    }>;
+    etag: string;
+    error?: {
+        message: string;
+    };
+}
+
+export interface CloudinaryTransformationOptions {
+    width?: number;
+    height?: number;
+    crop?: string;
+    gravity?: string;
+    quality?: string | number;
+    format?: string;
+    [key: string]: unknown;
+}

@@ -7,6 +7,7 @@ import {
     PaginatedCloudinaryImages,
     CloudinaryListOptions,
     CloudinaryApiError,
+    CloudinaryImageDetails,
 } from "@/types/cloudinary";
 import {
     CloudinaryResourcesOptions,
@@ -67,13 +68,13 @@ export async function getCloudinaryImages(
             cloudinaryOptions.prefix = `${folder}/${prefix}`;
         }
 
-        console.log(`Fetching images from Cloudinary with options:`, {
-            folder,
-            maxResults,
-            hasNextCursor: !!nextCursor,
-            tags,
-            prefix,
-        });
+        // console.log(`Fetching images from Cloudinary with options:`, {
+        //     folder,
+        //     maxResults,
+        //     hasNextCursor: !!nextCursor,
+        //     tags,
+        //     prefix,
+        // });
 
         // Fetch images from Cloudinary with proper error handling
         const result: CloudinaryListResponse = await new Promise(
@@ -130,9 +131,9 @@ export async function getCloudinaryImages(
             },
         };
 
-        console.log(
-            `Fetched ${images.length} images, has more: ${!!result.next_cursor}`
-        );
+        // console.log(
+        //     `Fetched ${images.length} images, has more: ${!!result.next_cursor}`
+        // );
 
         return {
             success: true,
@@ -530,4 +531,37 @@ export async function searchCloudinaryImages(
         ...options,
         prefix: searchTerm,
     });
+}
+
+export async function getCloudinaryImageByPublicId(publicId: string): Promise<{
+    success: boolean;
+    data?: CloudinaryImageDetails;
+    error?: string;
+}> {
+    try {
+        if (!publicId) {
+            return {
+                success: false,
+                error: "Public id is required.",
+            };
+        }
+
+        // Fetch the image from Cloudinary
+        const result: CloudinaryImageDetails = await cloudinary.api.resource(
+            publicId
+        );
+
+        return {
+            success: true,
+            data: result,
+        };
+    } catch (error) {
+        return {
+            success: false,
+            error:
+                error instanceof Error
+                    ? error.message
+                    : "Failed to fetch image",
+        };
+    }
 }

@@ -24,7 +24,7 @@ export async function uploadImagesCloudinary(
     error?: string;
 }> {
     try {
-        console.log("Starting Cloudinary upload...");
+        // console.log("Starting Cloudinary upload...");
 
         // Validate environment variables
         if (
@@ -52,7 +52,7 @@ export async function uploadImagesCloudinary(
             };
         }
 
-        console.log(`Processing ${files.length} file(s)`);
+        // console.log(`Processing ${files.length} file(s)`);
 
         const uploadPromises = files.map(async (file) => {
             try {

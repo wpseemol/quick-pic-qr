@@ -2,27 +2,27 @@
 "use client";
 
 import { CloudinaryImage } from "@/types/cloudinary";
+import { encodePath } from "@/utils/encode-decod";
 
 import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 interface ImageCardProps {
     image: CloudinaryImage;
 }
 
 export default function ImageCard({ image }: ImageCardProps) {
+    const router = useRouter();
+
     const handleFavorite = () => {
         // Add favorite functionality here
-        console.log("Favorite clicked for:", image.asset_id);
-    };
-
-    const handleViewImage = () => {
-        // Add view image functionality here
-        console.log("View image:", image.asset_id);
+        // console.log("Favorite clicked for:", image.public_id);
     };
 
     const handleGenerateQR = () => {
         // Add QR generation functionality here
-        console.log("Generate QR for:", image.asset_id);
+        router.push(`/gallery/${encodePath(image.public_id)}`);
     };
 
     return (
@@ -66,12 +66,13 @@ export default function ImageCard({ image }: ImageCardProps) {
                     </p> */}
                 </div>
                 <div className="flex items-center gap-2">
-                    <button
-                        onClick={handleViewImage}
-                        className="flex-1 bg-custom-primary text-font-color text-sm font-bold py-2.5 rounded-lg hover:bg-custom-primary/90 transition-colors"
+                    <Link
+                        href={image.secure_url}
+                        target="_blank"
+                        className="flex-1 bg-custom-primary text-font-color text-sm font-bold py-2.5 rounded-lg text-center hover:bg-custom-primary/90 transition-colors"
                     >
                         View Image
-                    </button>
+                    </Link>
                     <button
                         onClick={handleGenerateQR}
                         className="p-2.5 bg-[#e8f3f3] text-font-color rounded-lg hover:bg-custom-primary/20 transition-colors"

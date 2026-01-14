@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { uploadImagesCloudinary } from "@/action/image";
+import { usePathname } from "next/navigation";
 
 interface UploadedFile {
     id: string;
@@ -196,6 +197,8 @@ export default function HeroUploadArea() {
         return (bytes / (1024 * 1024)).toFixed(1) + " MB";
     };
 
+    const pathName = usePathname();
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -224,7 +227,7 @@ export default function HeroUploadArea() {
             });
 
             // Call server action
-            const result = await uploadImagesCloudinary(formData);
+            const result = await uploadImagesCloudinary(formData, pathName);
 
             if (result.success && result.data) {
                 setUploadResults(result.data);

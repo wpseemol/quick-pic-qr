@@ -59,7 +59,7 @@ export default function HeroTopLeftInput({
             }
 
             // Optional: You can add actual upload logic here
-            console.log("File uploaded:", file.name, file.size);
+            // console.log("File uploaded:", file.name, file.size);
         }, 1500);
     };
 

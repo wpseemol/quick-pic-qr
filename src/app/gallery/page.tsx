@@ -6,8 +6,6 @@ import ImageCard from "./_components/ImageCard";
 export default async function GalleryPage() {
     const response = await getCloudinaryImagesByPage();
 
-    console.log("data here", response);
-
     return (
         <main className="container mx-auto px-6 lg:px-20 py-8">
             {/* Hero Section / Upload Area */}
@@ -54,11 +52,16 @@ export default async function GalleryPage() {
             {/* Gallery Grid */}
             <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {response.success &&
-                    response.data &&
-                    response.data.images.length > 0 &&
+                response.data &&
+                response.data.images.length > 0 ? (
                     response.data.images.map((image) => (
-                        <ImageCard key={image.asset_id} image={image} />
-                    ))}
+                        <ImageCard key={image.public_id} image={image} />
+                    ))
+                ) : (
+                    <>
+                        <p className="text-center mt-6">image not found</p>
+                    </>
+                )}
 
                 {/* Empty State / Add Card */}
                 <div className="border-2 border-dashed border-[#e8f3f3] rounded-xl flex flex-col items-center justify-center p-8 bg-white/40 group hover:border-primary transition-colors cursor-pointer min-h-100">

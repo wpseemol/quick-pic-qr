@@ -9,8 +9,8 @@ export default function Header() {
                 <div className="flex items-center gap-3">
                     <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-font-color">
                         <Link href="/">
-                            <span className="material-symbols-outlined font-bold">
-                                bolt
+                            <span className="material-symbols-outlined text-3xl">
+                                photo_library
                             </span>
                         </Link>
                     </div>

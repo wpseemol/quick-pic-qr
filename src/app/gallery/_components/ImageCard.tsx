@@ -4,7 +4,7 @@
 import { useState } from "react";
 import { CloudinaryImage } from "@/types/cloudinary";
 import { encodePath } from "@/utils/encode-decod";
-import { deleteCloudinaryImage } from "@/action/image";
+// import { deleteCloudinaryImage } from "@/action/image";
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";

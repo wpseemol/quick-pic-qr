@@ -1,11 +1,7 @@
 import Image from "next/image";
 import HeroTopLeftInput from "./_components/HeroTopLeftInput";
-import { redirect } from "next/navigation";
-import { MY_GALLERY_URL } from "@/lib/const-valuse";
 
 export default function HomePage() {
-    redirect(MY_GALLERY_URL);
-
     return (
         <div className="relative flex min-h-screen flex-col overflow-x-hidden mx-auto container">
             <main className="flex-1">

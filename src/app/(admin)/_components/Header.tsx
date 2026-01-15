@@ -15,7 +15,7 @@ export default function Header() {
                         </Link>
                     </div>
                     <h2 className="text-xl font-extrabold tracking-tight">
-                        <Link href="/">Upload &amp; Share</Link>
+                        <Link href="/">Logo Section</Link>
                     </h2>
                 </div>
                 <div className="flex items-center gap-6 md:gap-10">

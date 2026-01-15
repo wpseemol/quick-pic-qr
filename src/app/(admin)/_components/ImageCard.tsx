@@ -7,19 +7,18 @@ import { encodePath } from "@/utils/encode-decod";
 // import { deleteCloudinaryImage } from "@/action/image";
 
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { decodeOriginalName } from "@/utils/file-name";
 
 interface SimpleImageCardProps {
     image: CloudinaryImage;
-    onDeleteSuccess?: (publicId: string) => void;
 }
 
-export default function SimpleImageCard({
-    image,
-    onDeleteSuccess,
-}: SimpleImageCardProps) {
+export default function SimpleImageCard({ image }: SimpleImageCardProps) {
     const router = useRouter();
+    const searchParamsInstance = useSearchParams();
+    const searchParams = new URLSearchParams(searchParamsInstance);
+
     const [isDeleting, setIsDeleting] = useState(false);
 
     const handleDelete = async () => {
@@ -51,7 +50,8 @@ export default function SimpleImageCard({
     };
 
     const handleQRClick = () => {
-        router.push(`/gallery/${encodePath(image.public_id)}`);
+        searchParams.set("id", encodePath(image.public_id));
+        router.replace(`/qr?${searchParams.toString()}`);
     };
 
     const formatFileSize = (bytes: number) => {

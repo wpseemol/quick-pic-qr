@@ -1,4 +1,4 @@
-import { MY_GALLERY_URL } from "@/lib/const-valuse";
+// import { MY_GALLERY_URL } from "@/lib/const-valuse";
 import Link from "next/link";
 
 export default function Header() {
@@ -19,12 +19,12 @@ export default function Header() {
                     </h2>
                 </div>
                 <div className="flex items-center gap-6 md:gap-10">
-                    <Link
+                    {/* <Link
                         className="hidden text-sm font-semibold hover:text-primary transition-colors md:block"
                         href={MY_GALLERY_URL}
                     >
                         My Gallery
-                    </Link>
+                    </Link> */}
                     <Link
                         className="hidden text-sm font-semibold hover:text-primary transition-colors md:block"
                         href="#"

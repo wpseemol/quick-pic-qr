@@ -1,4 +1,3 @@
-// app/page.tsx
 import { getCloudinaryImagesByPage } from "@/action/get-images";
 import HeroUploadArea from "./_components/HeroUploadArea";
 import ImageCard from "./_components/ImageCard";
